@@ -18,11 +18,8 @@ func main() {
 }
 
 var (
-	//brokers  = ""
-	version  = ""
-	group    = "ServiceProduct"
-	assignor = ""
-	oldest   = true
+	group  = "ServiceProduct"
+	oldest = true
 )
 
 func getKafkaConfig() ([]string, *sarama.Config) {
