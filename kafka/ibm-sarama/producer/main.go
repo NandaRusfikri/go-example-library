@@ -15,7 +15,6 @@ func main() {
 
 	topic := "coba"
 	CreateTopic(topic)
-	//CreateTopic("ayam")
 
 	kafkaProducer := NewKafkaProducer()
 
@@ -64,20 +63,30 @@ func CreateTopic(topic string) error {
 		return err
 	}
 	defer func() { _ = admin.Close() }()
-	//err = admin.CreateTopic(topic, &sarama.TopicDetail{
-	//	NumPartitions:     1,
-	//	ReplicationFactor: 1,
-	//}, false)
-	//if err != nil {
-	//	log.Errorf("Error while creating topic: %s", err.Error())
-	//	return err
-	//}
 
-	err = admin.CreatePartitions(topic, 3, [][]int32{}, false)
-	if err != nil {
-		log.Errorf("Error while creating partitions for topic: %s", err.Error())
-		return err
+	data, _ := admin.DescribeTopics([]string{topic})
+	var existTopic = false
+	for _, datum := range data {
+		if datum.Name == topic {
+			existTopic = true
+		}
 	}
+	if !existTopic {
+		err = admin.CreateTopic(topic, &sarama.TopicDetail{
+			NumPartitions:     3,
+			ReplicationFactor: 1,
+		}, false)
+		if err != nil {
+			log.Errorf("Error while creating topic: %s", err.Error())
+			return err
+		}
+		err = admin.CreatePartitions(topic, 3, [][]int32{}, false)
+		if err != nil {
+			log.Errorf("Error while creating partitions for topic: %s", err.Error())
+			return err
+		}
+	}
+
 	return err
 }
 
@@ -107,7 +116,7 @@ func getKafkaConfig() ([]string, *sarama.Config) {
 	}
 	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.NewBalanceStrategyRange()}
 
-	return []string{"localhost:9092"}, config
+	return []string{"103.67.78.63:9092"}, config
 }
 
 type Producer struct {

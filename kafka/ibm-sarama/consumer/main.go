@@ -40,7 +40,7 @@ func getKafkaConfig() ([]string, *sarama.Config) {
 	}
 	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.NewBalanceStrategyRange()}
 
-	return []string{"localhost:9092"}, config
+	return []string{"103.67.78.63:9092"}, config
 }
 
 func NewKafkaConsumer(ctx context.Context, topics []string) {
